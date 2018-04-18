@@ -2,21 +2,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * 
- * This software is subject to the terms of the Common Public License
- * Agreement, available at the following URL:
- *   http://www.opensource.org/licenses/cpl.html .
- * Copyright (C) 2003-2004 TONBELLER AG.
- * All Rights Reserved.
- * You must accept the terms of that agreement to use this software.
- * 
- *
- * 
- */
 
 /**
- * Tree Node for the for a general tree of Objects
+ * Utility class for data manipulation
+ * 
+ * @author jacobphillip
  */
 public class BTreeUtil {
     
