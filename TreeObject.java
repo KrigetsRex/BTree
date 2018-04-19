@@ -4,7 +4,7 @@
 //Contains the properties and methods related to an object which will be placed
 //into a hash table
 
-public class HashObject<T>{
+public class TreeObject<T>{
    //constants
    public static final byte NULL = 0;
    public static final byte USED = 1;
@@ -16,7 +16,7 @@ public class HashObject<T>{
    private byte state;
    
    //constructor
-   public HashObject(T o){
+   public TreeObject(T o){
 	   this.Obj = o;
 	   this.freqCount = 1;
 	   this.state = USED;
