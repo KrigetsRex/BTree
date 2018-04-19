@@ -17,21 +17,28 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Tree Node for the for a general tree of Objects
+ * Tree Node for a general tree of Objects
  */
 public class TreeNode {
 
   private TreeNode parent = null;
   private List children = null;
-  private Object reference;
+  private List reference;
 
   /**
    * cTtor
    * @param obj referenced object
    */
+  public TreeNode() {
+    this.parent = null;
+    this.reference = new ArrayList();
+    this.children = new ArrayList();
+  }
+  
   public TreeNode(Object obj) {
     this.parent = null;
-    this.reference = obj;
+    this.reference = new ArrayList();
+    this.reference.add(obj);
     this.children = new ArrayList();
   }
 
@@ -161,9 +168,9 @@ public class TreeNode {
   }
 
   /**
-   * @return reference object
+   * @return reference object list
    */
-  public Object getReference() {
+  public List getReference() {
     return reference;
   }
 
@@ -171,8 +178,8 @@ public class TreeNode {
    * set reference object
    * @param object reference
    */
-  public void setReference(Object object) {
-    reference = object;
+  public void addReference(Object object) {
+    this.reference.add(object);
   }
 
 } // TreeNode
