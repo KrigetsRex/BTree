@@ -56,7 +56,7 @@
 	   * @param key: the element which is to be added to the node
 	   */
 	  private void addRecursive(BTreeNode node, Object key){
-		//end case
+		//end case - cur node is a leaf
 		if ((node.getChildren().length() == 0){
 			if (node.getReference().length() < MAXELEMENTS)){
 				node.addReference(key);
@@ -64,6 +64,7 @@
 			else{ 
 				//get middle element
 				//add key
+				//remove middle element from node
 				//promote middle element to parent node
 			}
 		}
@@ -81,10 +82,11 @@
 			  node.addReference(key);
 		  }
 		  else {
+			  //get middle key - which will need to be promoted
+			  //add passed in key to list of elements
 			  //take all elements < middle-key and make new node - attach this new node to current node.parent,
 			  //and take all elements > middle-key and make new node - attach this new node to current node.parent,
-			  //promoteRecursive(node.getParent(), key);
+			  //promoteRecursive(node.getParent(), middleKey);
 		  }
-		  
 	  }
   }
