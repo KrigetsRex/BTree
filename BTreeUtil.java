@@ -1,7 +1,9 @@
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 /**
  * Utility class for data manipulation
@@ -9,6 +11,58 @@ import java.util.List;
  * @author jacobphillip
  */
 public class BTreeUtil {
+    
+    
+    public static String buildGeneBankString(String inputPath) {
+            
+        String str = "";
+        try{
+            File geneFile = new File(inputPath);
+            Scanner input = new Scanner(geneFile);
+            
+            while (input.hasNextLine()){
+                String line = input.nextLine();
+                if(line.contains("ORIGIN")){
+                    boolean dnaBlock = true;
+                    while(dnaBlock == true){
+                        String newLine = input.nextLine();
+                        if(!newLine.contains("//")){
+                            //Strip out all the non-dna characters
+                            str += newLine.replaceAll("[^AaGgTtCc]", "");
+                        }
+                        else{
+                            dnaBlock = false;
+                        }
+                    }     
+                }     
+            }
+        }
+        catch(FileNotFoundException e){
+             System.out.println("Exception occurred");  
+        }
+        
+        return str;
+    };
+    
+    
+    public static List<String> getSubsequences(int subLength, String dnaString){
+        
+        List<String> subSequences = new ArrayList<>();
+        
+        int length = dnaString.length();
+        
+        for(int i = 0; i < length; i++){
+            if(i + subLength <= length){
+                subSequences.add(dnaString.substring(i, i + subLength));
+            }
+        }
+        
+        return subSequences;
+    }
+    
+    
+    
+    
     
     /**
      * Converts a DNA strand into a binary string, and then into a
@@ -95,5 +149,9 @@ public class BTreeUtil {
         }
         return parts;
     }
+    
+    
+    
+    
 
 }
