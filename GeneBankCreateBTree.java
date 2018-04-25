@@ -9,9 +9,9 @@
 *                                    *
 * DNA-binary coding:                 *
 *    Adenine  00                     *
-*    Thiamine 11                     *
+*    Thymine 11                     *
 *    Cytosine 01                     *
 *    Guanine  10                     *
 **************************************/
 
-//java GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>
+//java GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]
