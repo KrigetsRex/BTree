@@ -12,7 +12,11 @@ import java.util.Scanner;
  */
 public class BTreeUtil {
     
-    
+    //constructor
+	public BTreeUtil(){
+		
+	}
+	
     public static String buildGeneBankString(String inputPath) {
             
         String str = "";
@@ -149,9 +153,4 @@ public class BTreeUtil {
         }
         return parts;
     }
-    
-    
-    
-    
-
 }
