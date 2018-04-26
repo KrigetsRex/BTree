@@ -33,6 +33,7 @@ public class GeneBankCreateBTree{
 	private byte debugLvl;
 	private BTree T;
 	private BTreeUtil util;
+	private Cache cache;
 	
 	public static void main(string[] args){
 		if (args.length < 4){
@@ -71,6 +72,7 @@ public class GeneBankCreateBTree{
 		//if made it this far - create tree and start passing in keys with BTreeUtil
 		T = new BTree(degree);
 		util = new BTreeUtil();
+		cache = new Cache(cacheSize);
 		
 		//create Tree
 	}
