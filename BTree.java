@@ -103,7 +103,7 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 	 */
 	private void promoteRecursive(BTreeNode node, Object key){
 		//end case
-		if node.getReference().length() < MAXELEMENTS{
+		if (node.getReference().length() < MAXELEMENTS){
 			node.addReference(key);
 		}
 		else {
@@ -112,15 +112,15 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 			
 			{  //adding this scope so that recursive calls do not eat up memory
 			
-				//add passed in key to list of elements
-				//also get which side of the new node is unbalanced
+				/*add passed in key to list of elements
+				  also get which side of the new node is unbalanced*/
 				byte side = node.addElement(key);
 				
 				//take all elements < middle-key and make new node - attach this new node to current node.parent
 				Node leftNode, rightNode;
-				ArrayList<Sequence> newElements = new ArrayList();
+				ArrayList<Sequence> newElements = new ArrayList<Sequence>();
 				ArrayList<Sequence> curElements = node.getElements();
-				ArrayList<Node> newChildren = new ArrayList();
+				ArrayList<Node> newChildren = new ArrayList<Node>();
 				ArrayList<Node> curChildren = node.getChildren();
 				
 				for (int i = 0; i < MAXELEMENTS / 2 + side; i++){
@@ -134,8 +134,8 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 				leftNode = new Node(node.getParent(), newElements, newChildren);
 				
 				//and take all elements > middle-key and make new node - attach this new node to current node.parent
-				ArrayList<Sequence> newElements = new ArrayList();
-				ArrayList<Node> newChildren = new ArrayList();
+				ArrayList<Sequence> newElements = new ArrayList<Sequence>();
+				ArrayList<Node> newChildren = new ArrayList<Node>();
 				
 				for (int i = MAXELEMENTS / 2 + side; i < MAXELEMENTS; i++){
 					newElements.add(curElements(i);
@@ -148,15 +148,27 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 				rightNode = new Node(node.getParent(), newElements, newChildren);
 				
 				//fix children list to reflect loss of this node and the addition of the 2 new ones.
-				ArrayList<Node> siblings = node.getParent().getChildren();
-				int index = siblings.indexOf(node);
-				siblings.set(index, leftNode);
-				siblings.add(index + 1, rightNode);
-				node.getParent().setChildren(siblings);	
-				
-			}  //end of local variable scope
-			   //side, leftNode, rightNode, newElements, curElements, newChildren, curChildren, and siblings should be gone
-			promoteRecursive(node.getParent(), middleKey);
+				if (node.getParent() == null){
+					root = new Node(null, middleKey, null);
+					leftNode.setParent(root);
+					rightNode.setParent(root);
+					ArrayList<Node> temp = new ArrayList<Node>();
+					temp.add(leftNode);
+					temp.add(rightNode);
+					root.setChildren(temp);
+				}
+				else{
+					ArrayList<Node> siblings = node.getParent().getChildren();
+					int index = siblings.indexOf(node);
+					siblings.set(index, leftNode);
+					siblings.add(index + 1, rightNode);
+					node.getParent().setChildren(siblings);	
+				}
+			}  /*end of local variable scope
+			     side, leftNode, rightNode, newElements, curElements, newChildren, curChildren, and siblings should be gone*/
+			if (node.getParent() == null){/*done*/} else{
+				promoteRecursive(node.getParent(), middleKey);
+			}
 		}
 	}
 
@@ -185,7 +197,6 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 			this.parent = parent;
 			this.elements = new ArrayList<Sequence>();
 			elements.add(firstElement);
-			
 			children = new ArrayList<Node>();
 		
 		}
@@ -243,7 +254,6 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 			}
 			
 			return retVal;
-			
 		}
 		
 		private Node getParent(){
@@ -273,7 +283,6 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 		public Node addChildNode(Sequence element){
 			Node retVal = new Node(this, element);
 			children.add(retVal);
-			
 			return retVal;
 		}
 	}
