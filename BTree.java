@@ -67,15 +67,36 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 		if ((node.getChildren().size() == 0)){
 			if (node.getElements().size() < MAXELEMENTS){
 			node.addElement(key);
+			}
+			else{ 
+				//remove middle element from node
+				Sequence middleKey = node.getMiddleSeq();
+				//add key
+				node.addElement(key);
+				//promote middle element to parent node
+				promoteRecursive(node.getParent(), middleKey);
+			}
 		}
-		else{ 
-			//get middle element
-			//add key
-			//remove middle element from node
-			//promote middle element to parent node
+		else{ //propogate key down the tree
+			ArrayList keys = node.getElements();
+			ArrayList Children = node.getChildren();  //will be 1 more child than # of keys
+			Node newNode = null;
+			for (int i = 0; i < keys.size(); i++){
+				if (i < keys.size()-1){
+					if (key > keys(i) && key < keys(i+1)){
+						//must be right of cur position -- do nothing goto check next key
+					}
+					else{
+						newNode = Children(i);  //found it, must be left of cur position
+						break;
+					}
+				}
+				else{  //made it to end of list without finding spot, must be far right
+					newNode = Children(i+1);
+				}
+			}
+			addRecursive(newNode, key);
 		}
-		}
-		//else check key against existing keys and call addRecursive(correct-child-node, key)
 	}
 
 	/**
@@ -89,8 +110,10 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 			node.addReference(key);
 		}
 		else {
-			//get middle key - which will need to be promoted
+			//get middle key - which will need to be promoted again
+			Sequence middleKey = node.getMiddleSeq();
 			//add passed in key to list of elements
+			node.addElement(key);
 			//take all elements < middle-key and make new node - attach this new node to current node.parent,
 			//and take all elements > middle-key and make new node - attach this new node to current node.parent,
 			//promoteRecursive(node.getParent(), middleKey);
@@ -130,7 +153,7 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 					elements.get(0).incrementFreq();
 				}else if (key.getBases() > elements.get(elements.size()-1).getBases()) { //key goes at back
 					elements.add(key);
-				} else if(key.getBases() == elements.get(elements.size()-1).getBases()){ //dup at back
+				} else if(key.getBases() == elements.get(elements.size()-1).getBases()){ //dump at back
 					elements.get(elements.size()-1).incrementFreq();
 				}else { //key goes in middle somewhere or is duplicate 
 					int i = 0;
@@ -164,7 +187,7 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 				System.out.println("Warning: no middle sequence");
 				return retVal;
 			} else {
-				retVal = elements.get(elements.size() / 2);
+				retVal = elements.remove(elements.size() / 2);
 			}
 			
 			return retVal;
@@ -201,10 +224,5 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 			
 			return retVal;
 		}
-		
-		
-		
-		
-		
 	}
 }

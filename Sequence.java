@@ -22,7 +22,4 @@ public class Sequence {
 	public void incrementFreq(){
 		freq++;
 	}
-
-	
-	
 }
