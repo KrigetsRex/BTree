@@ -74,7 +74,10 @@ public class GeneBankCreateBTree{
 		util = new BTreeUtil();
 		cache = new Cache(cacheSize);
 		
-		//create Tree
+                
+                if(debugLvl == 1){
+                    util.dumpTree(T.getRoot());
+                }
 	}
 	
 }
