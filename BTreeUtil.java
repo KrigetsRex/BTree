@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
@@ -13,10 +14,16 @@ import java.util.Scanner;
 public class BTreeUtil {
     
     //constructor
-	public BTreeUtil(){
-		
-	}
-	
+    public BTreeUtil(){
+
+    }
+
+    
+    /**
+     * 
+     * @param inputPath - path to the geneBank File
+     * @return String - single string of all the DNA bases
+     */
     public static String buildGeneBankString(String inputPath) {
             
         String str = "";
@@ -49,6 +56,14 @@ public class BTreeUtil {
     };
     
     
+    /**
+     * Takes in a single string and returns an ArrayList<String> 
+     * of Strings.
+     * 
+     * @param subLength - length of the substring
+     * @param dnaString - the DNA string to be sub-sequenced 
+     * @return 
+     */
     public static List<String> getSubsequences(int subLength, String dnaString){
         
         List<String> subSequences = new ArrayList<>();
@@ -64,6 +79,42 @@ public class BTreeUtil {
         return subSequences;
     }
     
+    
+    /**
+     * Recursively traverses the Btree from the root
+     * printing out the contents of the nodes through an in-order 
+     * traversal
+     * 
+     * @param node - pass in a node within the tree (root)
+     */
+    public static void inOrderTraversal(BTreeNode node, PrintWriter writer){
+        for(int i = 0; i < node.references.length; i++){
+            
+            if(null != node.children){
+                dumpInOrderTraversal(node.children.get(i), writer);
+            }
+            writer.println(node.references.get(i).getFrequency()+ " " + converLongToString(node.references.get(i).getKey()));
+        }
+    }
+    
+    
+    /**
+     * Uses the inOrderTraversal method to walk through a tree and output
+     * the frequency and string value to a new txt file.
+     * 
+     * @param node - The root of the tree
+     */
+    public static void dumpTree(BTreeNode node){
+        try{
+            PrintWriter writer = new PrintWriter("dump.txt", "UTF-8");
+            inOrderTraversal(node, writer);
+            writer.close();
+        }
+        catch(Exception e){
+            System.out.println("There was an issue:" + e);
+        }
+    }
+        
     
     
     
@@ -138,6 +189,9 @@ public class BTreeUtil {
         return returnString;
     }
     
+    
+    
+    
     /**
      * Splits a string into a designated number of pieces
      * @param string 
@@ -153,4 +207,8 @@ public class BTreeUtil {
         }
         return parts;
     }
+    
+    
+    
+    
 }
