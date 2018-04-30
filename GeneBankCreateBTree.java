@@ -9,7 +9,7 @@
 *                                    *
 * DNA-binary coding:                 *
 *    Adenine  00                     *
-*    Thiamine 11                     *
+*    Thymine 11                      *
 *    Cytosine 01                     *
 *    Guanine  10                     *
 **************************************/
