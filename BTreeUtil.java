@@ -80,40 +80,7 @@ public class BTreeUtil {
     }
     
     
-    /**
-     * Recursively traverses the Btree from the root
-     * printing out the contents of the nodes through an in-order 
-     * traversal
-     * 
-     * @param node - pass in a node within the tree (root)
-     */
-    public static void inOrderTraversal(BTreeNode node, PrintWriter writer){
-        for(int i = 0; i < node.references.length; i++){
-            
-            if(null != node.children){
-                dumpInOrderTraversal(node.children.get(i), writer);
-            }
-            writer.println(node.references.get(i).getFrequency()+ " " + converLongToString(node.references.get(i).getKey()));
-        }
-    }
-    
-    
-    /**
-     * Uses the inOrderTraversal method to walk through a tree and output
-     * the frequency and string value to a new txt file.
-     * 
-     * @param node - The root of the tree
-     */
-    public static void dumpTree(BTreeNode node){
-        try{
-            PrintWriter writer = new PrintWriter("dump.txt", "UTF-8");
-            inOrderTraversal(node, writer);
-            writer.close();
-        }
-        catch(Exception e){
-            System.out.println("There was an issue:" + e);
-        }
-    }
+
         
     
     
