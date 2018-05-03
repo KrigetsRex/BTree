@@ -16,8 +16,8 @@
 
 //java GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.NumberFormatException;
 
@@ -99,6 +99,13 @@ public class GeneBankCreateBTree{
 		}
         
 		//dump tree to binary file
+		File file = new File("dump");
+		// if file doesnt exists, then create it
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		FileOutputStream out = new FileOutputStream(file);
+		Tree.write(out);
 	}
 	
 }
