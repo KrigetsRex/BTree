@@ -1,11 +1,9 @@
-
 /**
  * BTree Class for CS321
  *
  * @author Keener
  * @author Luke Grice
  */
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +12,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class BTree<T extends Comparable<? super T> & Serializable> implements Serializable {
-    private transient Node root;
+
+    public transient Node root;
     private final int t;                            //minimum degree
     private final int maxKeys;
 
@@ -50,9 +49,12 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
                 return zipSearch(zipFile, key, n, prefix + searchIndex + '/');
             } catch (NullPointerException e) {
                 // this probably happened because zipFile.getEntry returns null if there is no entry for the input string, which is the case when we do not find our key
-                if (e.getMessage().equals("entry"))  // This is always the message for a missing entry, but this check might not be necessary
+                if (e.getMessage().equals("entry")) // This is always the message for a missing entry, but this check might not be necessary
+                {
                     return new Key<>(key, 0);
-                else throw e;
+                } else {
+                    throw e;
+                }
             }
         }
     }
@@ -95,9 +97,9 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
         // special case - empty tree
         if (root == null) {
             root = new Node(k);
-        } else {
-            //non-empty trees
-            //if root is full
+        } else //non-empty trees
+        //if root is full
+        {
             if (root.keys.size() == maxKeys) {
                 //creates a new node to make as root
                 Node newRoot = new Node(false);
@@ -131,6 +133,7 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
     }
 
     public static class Key<E extends Comparable<? super E>> implements Comparable<Key<E>>, Serializable {
+
         public E key;
         public long count;
 
@@ -160,6 +163,7 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
      */
     //class is currently public - making it private made some testing difficult. Not sure if there's a workaround
     public class Node implements Serializable {
+
         //TODO add readObject and writeObject methods to more carefully serialize node data.
         public ArrayList<Key<T>> keys;
         public transient ArrayList<Node> children;
@@ -185,7 +189,8 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
         }
 
         /**
-         * Method to insert a given key into this node. Should only be called if a node is not full
+         * Method to insert a given key into this node. Should only be called if
+         * a node is not full
          */
         public void insertNonFull(T k) {
             //get the right-most key index
@@ -229,7 +234,6 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
         /*
          * Splits a full node, using i as the split index
          */
-
         public void splitChild(int i, Node fullNode) {
             //make a new node to contain some of fullnodes keys
             Node newNode = new Node(fullNode.isLeaf);
@@ -299,6 +303,41 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
                 }
             }
             return keys;
+        }
+    }
+    
+    
+    
+    //  D U M P   T R E E    T O    F I L E 
+    /**
+     * Uses the inOrderTraversal method to walk through a tree and output the
+     * frequency and string value to a new txt file.
+     *
+     * @param node - The root of the tree
+     */
+    public void dumpTree(Node node) {
+        try {
+            PrintWriter writer = new PrintWriter("dump.txt", "UTF-8");
+            inOrderTraversal(node, writer);
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("There was an issue:" + e);
+        }
+    }
+    
+    /**
+     * Recursively traverses the BTree from the root printing out the contents
+     * of the nodes through an in-order traversal
+     *
+     * @param node - pass in a node within the tree (root)
+     * @param writer
+     */
+    public void inOrderTraversal(Node node, PrintWriter writer) {
+        for (int i = 0; i < node.keys.size(); i++) {
+            if (null != node.children) {
+                inOrderTraversal(node.children.get(i), writer);
+            }
+            writer.println(node.keys.get(i).count + " " + BTreeUtil.converLongToString(node.keys.get(i).count));
         }
     }
 
