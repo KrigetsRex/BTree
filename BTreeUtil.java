@@ -28,8 +28,8 @@ public class BTreeUtil {
             
         String str = "";
         try{
-            File geneFile = new File(inputPath);
-            Scanner input = new Scanner(geneFile);
+            File queryFile = new File(inputPath);
+            Scanner input = new Scanner(queryFile, "UTF-8");
             
             while (input.hasNextLine()){
                 String line = input.nextLine();
@@ -80,8 +80,32 @@ public class BTreeUtil {
     }
     
     
-
+    /**
+     * Parses a query file for all strings and returns them in an arrayList
+     * 
+     * @param fileName
+     * @return 
+     */
+     public static List<String> getQueryStrings(String fileName){
+         
+        List<String> queryStrings = new ArrayList<>();
+         
+        try{
+            File queryFile = new File(fileName);
+            Scanner input = new Scanner(queryFile, "UTF-8");
+            
+            while (input.hasNextLine()){ 
+                //Shouldn't have to worry about white space, but if we do, 
+                //add add this .replaceAll("\\s+","")
+                queryStrings.add(input.nextLine());  
+            }
+        }
+        catch(FileNotFoundException e){
+             System.out.println("Exception occurred" + e);  
+        }
         
+        return queryStrings;
+     } 
     
     
     
