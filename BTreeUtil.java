@@ -28,8 +28,8 @@ public class BTreeUtil {
             
         String str = "";
         try{
-            File geneFile = new File(inputPath);
-            Scanner input = new Scanner(geneFile);
+            File queryFile = new File(inputPath);
+            Scanner input = new Scanner(queryFile, "UTF-8");
             
             while (input.hasNextLine()){
                 String line = input.nextLine();
@@ -81,40 +81,31 @@ public class BTreeUtil {
     
     
     /**
-     * Recursively traverses the Btree from the root
-     * printing out the contents of the nodes through an in-order 
-     * traversal
+     * Parses a query file for all strings and returns them in an arrayList
      * 
-     * @param node - pass in a node within the tree (root)
+     * @param fileName
+     * @return 
      */
-    public static void inOrderTraversal(BTreeNode node, PrintWriter writer){
-        for(int i = 0; i < node.references.length; i++){
-            
-            if(null != node.children){
-                dumpInOrderTraversal(node.children.get(i), writer);
-            }
-            writer.println(node.references.get(i).getFrequency()+ " " + converLongToString(node.references.get(i).getKey()));
-        }
-    }
-    
-    
-    /**
-     * Uses the inOrderTraversal method to walk through a tree and output
-     * the frequency and string value to a new txt file.
-     * 
-     * @param node - The root of the tree
-     */
-    public static void dumpTree(BTreeNode node){
+     public static List<String> getQueryStrings(String fileName){
+         
+        List<String> queryStrings = new ArrayList<>();
+         
         try{
-            PrintWriter writer = new PrintWriter("dump.txt", "UTF-8");
-            inOrderTraversal(node, writer);
-            writer.close();
+            File queryFile = new File(fileName);
+            Scanner input = new Scanner(queryFile, "UTF-8");
+            
+            while (input.hasNextLine()){ 
+                //Shouldn't have to worry about white space, but if we do, 
+                //add add this .replaceAll("\\s+","")
+                queryStrings.add(input.nextLine());  
+            }
         }
-        catch(Exception e){
-            System.out.println("There was an issue:" + e);
+        catch(FileNotFoundException e){
+             System.out.println("Exception occurred" + e);  
         }
-    }
         
+        return queryStrings;
+     } 
     
     
     

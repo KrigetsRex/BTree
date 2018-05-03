@@ -7,6 +7,7 @@
  ****************************************/
 
 
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -285,5 +286,40 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
 			children.add(retVal);
 			return retVal;
 		}
+                
+                
+                /**
+                * Recursively traverses the Btree from the root
+                * printing out the contents of the nodes through an in-order 
+                * traversal
+                * 
+                * @param node - pass in a node within the tree (root)
+                */
+               public void inOrderTraversal(Node node, PrintWriter writer){
+                   for(int i = 0; i < node.elements.length; i++){
+                       if(null != node.children){
+                           inOrderTraversal(node.children.get(i), writer);
+                       }
+                       writer.println(node.elements.get(i).getFrequency()+ " " + converLongToString(node.elements.get(i).getKey()));
+                   }
+               }
+
+
+               /**
+                * Uses the inOrderTraversal method to walk through a tree and output
+                * the frequency and string value to a new txt file.
+                * 
+                * @param node - The root of the tree
+                */
+               public void dumpTree(Node node){
+                   try{
+                       PrintWriter writer = new PrintWriter("dump.txt", "UTF-8");
+                       inOrderTraversal(node, writer);
+                       writer.close();
+                   }
+                   catch(Exception e){
+                       System.out.println("There was an issue:" + e);
+                   }
+               }
 	}
 }
