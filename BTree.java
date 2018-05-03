@@ -42,7 +42,7 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
         if (keyIndex >= 0) {
             return parent.keys.get(keyIndex);
         } else {
-            int searchIndex = 1 - keyIndex;
+            int searchIndex = -1 - keyIndex;
             try {
                 ObjectInputStream objectStream = new ObjectInputStream(zipFile.getInputStream(zipFile.getEntry(prefix + searchIndex + "/n")));  // Note this is not a newline character
                 BTree.Node n = (BTree.Node) objectStream.readObject();
