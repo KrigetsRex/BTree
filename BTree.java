@@ -1,325 +1,265 @@
-/*****************************************
- *  BTree
- *  CS321
- *  Class for container type BTree
- *  Contains the methods pertaining to 
- *  creating and editing a BTree
- ****************************************/
-
-
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * BTree Class
+ * BTree Class for CS321
+ * 
+ * @author Keener
+ * @author Luke Grice
  */
-public class BTree<T extends Comparable<? super T> & Serializable> implements Serializable {
-	//Private Variables
-	private int t;  //the degree of the BTree
-	private int MAXELEMENTS;
-	private int MAXCHILDREN;
-	private Node root;
+import java.util.ArrayList;
+import java.util.Collections;
 
-	//Public Methods
+public class BTree {
 
-	/**
-	 * Constructor
-	 */
-	public BTree(int degree){
-		this.t = degree;
-		this.MAXELEMENTS = (2*t) - 1;
-		this.MAXCHILDREN = MAXELEMENTS + 1;
+	Node root;
+	int t;   							//minimum degree
+	int maxKeys;
+	int maxChildren;
+
+	public BTree(int t){
+		this.t = t;
+		root = null;
+
+		this.maxChildren = 2 * t;
+		this.maxKeys =  maxChildren - 1;
+		
+		
+		
+
 	}
-
-	/**
-	 * add key to a node in the tree
-	 * @param key: the element to be added to the tree
-	 */
-	public void addElement(Sequence key){
-
-		//first case - create root  
-		if (root == null){
-			root = new Node(null, key);
-		}
-
-		//special case - add elements to root w/o child
-		else if ((root.getChildren().size() == 0) && (root.getElements().size() < MAXELEMENTS)){
-			root.addElement(key);
-		}
-
-		// all other cases
-		else {
-			addRecursive(root, key);
-		}				 
-	}
-
-	//Private Methods
-	/**
-	 * recursive method to find the leaf in which the key should reside and add it there
-	 * if leaf is full then it will promote the appropriate key and add it to the parent 
-	 * node via a recursive scall to promote.
-	 * @param node: the node in which to add the element
-	 * @param key: the element which is to be added to the node
-	 */
-	private void addRecursive(Node node, Sequence key){
-		//end case - cur node is a leaf
-		if ((node.getChildren().size() == 0)){
-			if (node.getElements().size() < MAXELEMENTS){
-			node.addElement(key);
-			}
-			else{ 
-				Sequence middleKey = node.getMiddleSeq();
-				node.addElement(key);
-				promoteRecursive(node.getParent(), middleKey);
-			}
-		}
-		else{ //propogate key down the tree
-			ArrayList<Node> keys = node.getElements();
-			ArrayList<Sequence> Children = node.getChildren();  //will be 1 more child than # of keys
-			Node newNode = null;
-			for (int i = 0; i < keys.size(); i++){
-				if (i < keys.size()-1){
-					if (key > keys(i) && key < keys(i+1)){
-						//must be right of cur position -- do nothing goto check next key
-					}
-					else{
-						newNode = Children(i);  //found it, must be left of cur position
-						break;
-					}
-				}
-				else{  //made it to end of list without finding spot, must be far right
-					newNode = Children(i+1);
-				}
-			}
-			addRecursive(newNode, key);
-		}
-	}
-
-	/**
-	 * recursive method to promote an element up the tree
-	 * @param node: the node in which the promoted key will attempt to occupy
-	 * @param key: the key to be promoted
-	 */
-	private void promoteRecursive(BTreeNode node, Object key){
-		//end case
-		if (node.getReference().length() < MAXELEMENTS){
-			node.addReference(key);
-		}
-		else {
-			//get middle key - which will need to be promoted again
-			Sequence middleKey = node.getMiddleSeq();
-			
-			{  //adding this scope so that recursive calls do not eat up memory
-			
-				/*add passed in key to list of elements
-				  also get which side of the new node is unbalanced*/
-				byte side = node.addElement(key);
-				
-				//take all elements < middle-key and make new node - attach this new node to current node.parent
-				Node leftNode, rightNode;
-				ArrayList<Sequence> newElements = new ArrayList<Sequence>();
-				ArrayList<Sequence> curElements = node.getElements();
-				ArrayList<Node> newChildren = new ArrayList<Node>();
-				ArrayList<Node> curChildren = node.getChildren();
-				
-				for (int i = 0; i < MAXELEMENTS / 2 + side; i++){
-					newElements.add(curElements(i);
-				}
-				if (curChildren != null){
-					for (int i = 0; i < MAXCHILDREN / 2 + side; i++){
-						newChildren.add(curChildren(i);
-					}
-				}
-				leftNode = new Node(node.getParent(), newElements, newChildren);
-				
-				//and take all elements > middle-key and make new node - attach this new node to current node.parent
-				ArrayList<Sequence> newElements = new ArrayList<Sequence>();
-				ArrayList<Node> newChildren = new ArrayList<Node>();
-				
-				for (int i = MAXELEMENTS / 2 + side; i < MAXELEMENTS; i++){
-					newElements.add(curElements(i);
-				}
-				if (curChildren != null){
-					for (int i = MAXCHILDREN / 2 + side; i <= MAXCHILDREN; i++){
-						newChildren.add(curChildren(i);
-					}
-				}
-				rightNode = new Node(node.getParent(), newElements, newChildren);
-				
-				//fix children list to reflect loss of this node and the addition of the 2 new ones.
-				if (node.getParent() == null){
-					root = new Node(null, middleKey, null);
-					leftNode.setParent(root);
-					rightNode.setParent(root);
-					ArrayList<Node> temp = new ArrayList<Node>();
-					temp.add(leftNode);
-					temp.add(rightNode);
-					root.setChildren(temp);
-				}
-				else{
-					ArrayList<Node> siblings = node.getParent().getChildren();
-					int index = siblings.indexOf(node);
-					siblings.set(index, leftNode);
-					siblings.add(index + 1, rightNode);
-					node.getParent().setChildren(siblings);	
-				}
-			}  /*end of local variable scope
-			     side, leftNode, rightNode, newElements, curElements, newChildren, curChildren, and siblings should be gone*/
-			if (node.getParent() == null){/*done*/} else{
-				promoteRecursive(node.getParent(), middleKey);
-			}
-		}
-	}
-
 	
 	/*
-	 * Inner Node class
-	 * container for keys which includes the list of keys, a list of children, and a pointer to its parent
+	 * Inserts a key into the Btree
+	 * 
+	 * k - sequence containing a long of binary bases
 	 */
-	private class Node implements Serializable {
-		//public variables
-		public static final byte LEFT = 1;
-		public static final byte RIGHT = 0;
+
+	public void insert(Sequence k){
 		
-		//private variables
-		private Node parent;
-		private ArrayList<Sequence> elements;
-		private transient ArrayList<Node> children;
+		System.out.println("INSERT: " + k.getBases());
 		
-		private Node(Node parent, ArrayList<Sequence> elements, ArrayList<Node> children){
-			this.parent = parent;
-			this.elements = elements;
-			this.children = children;
-		}
 		
-		private Node(Node parent, Sequence firstElement){
-			this.parent = parent;
-			this.elements = new ArrayList<Sequence>();
-			elements.add(firstElement);
-			children = new ArrayList<Node>();
-		
-		}
-		
-		private byte addElement(Sequence key){
-			byte side = LEFT;
-			if (elements.size() == 0){
-				elements.add(key);
+		// special case - empty tree
+		if (root == null){			
+			root = new Node(true);
+			root.keys.add(k);
+		}else{
+			
+		//non-empty trees
+			
+			//if root is full
+			if (root.keys.size() == maxKeys){
+				
+				//creates a new node to make as root
+				Node newRoot = new Node(false);
+				
+				//adds the current root as a child
+				newRoot.children.add(root);      
+				
+				//splits the full root
+				newRoot.splitChild(0, root);
+				
+				//determines child position for new sequence
+				int i = 0;
+				if (newRoot.keys.get(0).getBases() < k.getBases()){
+					i++;
+				}
+				
+				//adds sequence to specified child
+				newRoot.children.get(i).insertNonFull(k);
+				
+				//re-assigns root
+				root = newRoot;
+				
+				
 			} else {
-				if (key.getBases() < elements.get(0).getBases()){  //key goes at front
-					elements.add(0, key);
-				} else if (key.getBases() == elements.get(0).getBases()){ //dump at front
-					elements.get(0).incrementFreq();
-				}else if (key.getBases() > elements.get(elements.size()-1).getBases()) { //key goes at back
-					elements.add(key);
-					side = RIGHT;
-				} else if(key.getBases() == elements.get(elements.size()-1).getBases()){ //dump at back
-					elements.get(elements.size()-1).incrementFreq();
-					side = RIGHT;
-				}else { //key goes in middle somewhere or is duplicate 
-					int i = 0;
-					boolean placed = false;
+				//if root is not full, determine proper position of sequence
+		
+				root.insertNonFull(k);
+			}
+			
+
+		}
+		
+	}
+	
+	//currently not working, should traverse the tree starting at the root
+	
+	public void fullTraverse(){
+		root.traverse();
+	}
+	
+	/*
+	 * Returns the root node
+	 */
+	
+	public Node getRoot(){
+		return root;
+	}
+	
+
+	/*
+	 * Inner class for nodes
+	 */
+
+	//class is currently public - making it private made some testing difficult. Not sure if there's a workaround
+	public class Node{
+		ArrayList<Sequence> keys;
+		ArrayList<Node> children;
+		boolean isLeaf;
+
+		/*
+		 * Constructor
+		 */
+		
+		public Node(boolean isLeaf){
+			this.isLeaf = isLeaf;
+			keys = new ArrayList<Sequence>();
+			children = new ArrayList<Node>();
+
+		}
+		
+		/*
+		 * Method to insert a given key into this node. Should only be called if a node is not full
+		 */
+
+		
+		public void insertNonFull(Sequence k){
+						
+			//get the right-most element index
+			int i = keys.size() - 1;
+			
+			//if leaf, determine the correct position of the new key
+			if (isLeaf){
+				while (i >= 0 && keys.get(i).getBases() > k.getBases()){
+					i--;
+				}
+				//insert key at location
+				keys.add(i+1, k);
+			} else {
+				//if not leaf, find child that will get new key
+				
+				while (i >= 0 && keys.get(i).getBases() > k.getBases()){
+					i--;
+				}
+				
+				//check if that child is full
+				if (children.get(i+1).keys.size() == maxKeys){
 					
-					while(i < elements.size()-1 && !placed){ // a 0 b 1 c 2 d 3 e 4f
-						// key is in-between two values
-						if(key.getBases() > elements.get(i).getBases() && key.getBases() < elements.get(i+1).getBases()){
-							placed = true;
-							elements.add(i+1, key);
-						} else if (key.getBases() == elements.get(i+1).getBases()){ //key is a duplicate
-							placed = true;
-							elements.get(i+1).incrementFreq();
-						} else {
-							i++;
-						}
+					//if so, split the child
+					splitChild(i+1, children.get(i+1));
+					
+					
+					//after split, check which new branch is going to have new key
+					if (keys.get(i+1).getBases() < k.getBases()){
+						i++;
 					}
-					if (i > elements.size() / 2){
-						side = RIGHT;
-					}
-					if (i == elements.size()-1){
-						System.out.println("Warning, key not slotted: " + key);
-					}
+					
+
+				}
+				
+				children.get(i+1).insertNonFull(k);
+			}
+		}
+		
+		
+		/*
+		 * Splits a full node, using i as the split index
+		 */
+		
+		public void splitChild(int i, Node fullNode){
+
+			//make a new node to contain some of fullnodes keys
+			Node newNode = new Node(fullNode.isLeaf);
+			
+			//copy last t-1 keys of fullnode into the newnode
+			for (int j = 0; j < t -1; j++){
+				newNode.keys.add(fullNode.keys.get(j+t));
+			}
+			
+			//copy the last t children of fullnode into newnode
+			
+			if (!fullNode.isLeaf){
+				for (int j = 0; j < t; j++){
+					newNode.children.add(fullNode.children.get(j+t));
+				}
+				
+				//remove old nodes that have now been transfered
+				
+				for (int o = 0; o < t; o++){
+					fullNode.children.remove(fullNode.children.size()-1);
+				}
+				
+			}
+			
+			
+			
+			//link new child to node
+			
+			this.children.add(i+1, newNode);
+			
+			
+			//add the middle key of full node into the new node
+			this.keys.add(i, fullNode.keys.get(t-1));
+			
+			// remove old keys that have now been split
+			for (int o = fullNode.keys.size()-1; o>= t-1 ; o--){
+				fullNode.keys.remove(o);
+			}
+		}
+		
+		/*
+		 * Should search the btree when called on the node. 
+		 * 
+		 * Currently untested.
+		 */
+		
+		public Node search(Sequence k){
+			
+			int i = 0;
+			
+			while (i < keys.size() && k.getBases() > keys.get(i).getBases()){
+				i++;
+			}
+			
+			if (keys.get(i).getBases() == k.getBases()){
+				return this;
+			}
+			
+			if (isLeaf){
+				return null;
+			}
+			
+			return children.get(i).search(k);
+		}
+		
+		public void traverse(){
+			int i;
+			
+			System.out.println("tr start");
+			
+			for (i = 0; i < keys.size(); i++){
+				if(!isLeaf){
+					
+					
+					children.get(i).traverse();
+					
 				}
 			}
-			return side;
-		}
-		
-		private Sequence getMiddleSeq(){
-			Sequence retVal = null;
 			
-			if ((elements.size()%2) == 0){
-				System.out.println("Warning: no middle sequence");
-				return retVal;
-			} else {
-				retVal = elements.remove(elements.size() / 2);
+			if (!isLeaf){
+				children.get(i).traverse();
 			}
 			
-			return retVal;
 		}
 		
-		private Node getParent(){
-			return parent;
+		public ArrayList<Sequence> getKeys() {
+			return keys;
 		}
 		
-		private void setParent(Node parent){
-			this.parent = parent;
-		}
-
-		public ArrayList<Sequence> getElements() {
-			return elements;
-		}
-
-		public void setElements(ArrayList<Sequence> elements) {
-			this.elements = elements;
-		}
-
-		public ArrayList<Node> getChildren() {
-			return children;
-		}
-
-		public void setChildren(ArrayList<Node> children) {
-			this.children = children;
-		}
 		
-		public Node addChildNode(Sequence element){
-			Node retVal = new Node(this, element);
-			children.add(retVal);
-			return retVal;
-		}
-                
-                
-                /**
-                * Recursively traverses the Btree from the root
-                * printing out the contents of the nodes through an in-order 
-                * traversal
-                * 
-                * @param node - pass in a node within the tree (root)
-                */
-               public void inOrderTraversal(Node node, PrintWriter writer){
-                   for(int i = 0; i < node.elements.length; i++){
-                       if(null != node.children){
-                           inOrderTraversal(node.children.get(i), writer);
-                       }
-                       writer.println(node.elements.get(i).getFrequency()+ " " + converLongToString(node.elements.get(i).getKey()));
-                   }
-               }
+		
 
 
-               /**
-                * Uses the inOrderTraversal method to walk through a tree and output
-                * the frequency and string value to a new txt file.
-                * 
-                * @param node - The root of the tree
-                */
-               public void dumpTree(Node node){
-                   try{
-                       PrintWriter writer = new PrintWriter("dump.txt", "UTF-8");
-                       inOrderTraversal(node, writer);
-                       writer.close();
-                   }
-                   catch(Exception e){
-                       System.out.println("There was an issue:" + e);
-                   }
-               }
 	}
+
 }
