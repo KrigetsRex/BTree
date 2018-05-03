@@ -115,7 +115,7 @@ public class BTreeUtil {
      * @param dna - the String of type [A,T,C,G];
      * @return - new Long value that represents the DNA string
      */
-    public static Long converStringToLong(String dna){
+    public static Long convertStringToLong(String dna){
         
         String str = "";
         
@@ -147,12 +147,25 @@ public class BTreeUtil {
     /**
      * Converts a Long to a binary string, and then back to DNA
      * @param key - the Long value used as a key within the Btree
+     * @param seqLen
      * @return - original DNA string value
      */
-    public static String converLongToString(Long key){
-        String boolString = Long.toBinaryString(key);
+    public static String convertLongToString(Long key, Integer seqLen){
+        
+        String boolString =  Long.toBinaryString(key);
+        
+        Boolean sameLength = false;
+        while(!sameLength){
+            int length = boolString.length()/2;
+            if(length >= seqLen){
+                sameLength = true;
+            }
+            else{
+                boolString = "00" + boolString;
+            }
+        }
        
-        List<String> strArr = getParts("foobarspam", 2);
+        List<String> strArr = getParts(boolString, 2);
         int arrSize = strArr.size();
         String returnString = "";
         for(int i = 0; i < arrSize; i++){ 
