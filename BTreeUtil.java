@@ -49,7 +49,7 @@ public class BTreeUtil {
             }
         }
         catch(FileNotFoundException e){
-             System.out.println("Exception occurred");  
+             System.out.println("Exception occurred: " + e);  
         }
         
         return str;
@@ -198,6 +198,12 @@ public class BTreeUtil {
         }
         return parts;
     }
+
+    public static String createBTreeFileName(String gbkFile, Integer k, Integer t){ 
+        return gbkFile + ".btree.data." + k + "." + t; 
+    }
+    
+    
     
     
     
