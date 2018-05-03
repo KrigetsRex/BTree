@@ -11,7 +11,7 @@ import java.util.ConcurrentModificationException;
  * @param <T> - class of objects stored in the list 
  */
 public class Cache<T> {
-	private BTreeNode<T> head, tail;
+	private Sequence<T> head, tail;
 	private int size, maxsize, modCount, references, hits;
 	
 	//constructor
@@ -30,7 +30,7 @@ public class Cache<T> {
      * @param element the element to be added to the front of this list    
      */
     private void addToFront(T element) {
-    	BTreeNode<T> newNode = new BTreeNode<T>(element);
+    	Sequence<T> newNode = new Sequence<T>(element);
     	newNode.setNext(head);
     	if(isEmpty())  
     		tail = newNode;
@@ -48,7 +48,7 @@ public class Cache<T> {
      * @param element the element to be added to the rear of this list    
      */
     private void addToRear(T element) {
-    	BTreeNode<T> newNode = new BTreeNode<T>(element);
+    	Sequence<T> newNode = new Sequence<T>(element);
     	newNode.setPrev(tail);
     	if(isEmpty())  
     		head = newNode;
@@ -84,8 +84,8 @@ public class Cache<T> {
     	if (isEmpty())
     		throw new NoSuchElementException();
     	
-    	BTreeNode<T> newNode = new BTreeNode<T>(element);
-    	BTreeNode<T> cur = head;
+    	Sequence<T> newNode = new Sequence<T>(element);
+    	Sequence<T> cur = head;
     	
     	while (!cur.getElement().equals(target) && cur.getNext() != null)
     		cur = cur.getNext();
@@ -173,7 +173,7 @@ public class Cache<T> {
      * @throws NoSuchElementException if element is not in this list
      */
     public int getObject(T element) {
-     	BTreeNode<T> cur = head;
+     	Sequence<T> cur = head;
 		references++;
 		int index = 0;
 		
@@ -211,7 +211,7 @@ public class Cache<T> {
      * @throws NoSuchElementException if element is not in this list
      */
     public T removeObject(T element) {
-     	BTreeNode<T> cur = head;
+     	Sequence<T> cur = head;
 		
     	while (cur != null && !cur.getElement().equals(element)){
     		cur = cur.getNext();
@@ -468,8 +468,8 @@ public class Cache<T> {
      * @author Luke Grice
      */
     private class DLLIterator implements ListIterator<T> {
-    	private BTreeNode<T> nextNode;
-    	private BTreeNode<T> lastRetNode;
+    	private Sequence<T> nextNode;
+    	private Sequence<T> lastRetNode;
     	private int INIT_MODCOUNT;
     	private int nextIndex;
     	
@@ -592,7 +592,7 @@ public class Cache<T> {
     		}
     		
     		else {
-    			BTreeNode<T> newNode = new BTreeNode<T>(element);
+    			Sequence<T> newNode = new Sequence<T>(element);
     			newNode.setNext(nextNode);
    				newNode.setPrev(nextNode.getPrev());
    				nextNode.getPrev().setNext(newNode);

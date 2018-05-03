@@ -70,14 +70,35 @@ public class GeneBankCreateBTree{
 		}
 		
 		//if made it this far - create tree and start passing in keys with BTreeUtil
-		T = new BTree(degree);
+		Tree = new BTree(degree);
 		util = new BTreeUtil();
 		cache = new Cache(cacheSize);
+		String str = util.buildGeneBankString(file);
+		String strArray() = util.getSubsequences(seqLen, str);
 		
-                
-                if(debugLvl == 1){
-                    util.dumpTree(T.getRoot());
-                }
+		//convert strings into keys and cache 
+		for(int i = 0; i < strArray.size(); i++){
+			Long tempBase = util.converStringToLong(strArray(i));
+			Sequence tempSeq = new Sequence(tempBase);
+			int indx = cache.indexOf(tempSeq);  //returns -1 if not found
+			if (indx != -1){
+				cache.get(indx).incrementFreq();
+			}
+			else if (cache.size() < cacheSize){
+				cache.addObject(tempSeq);
+			}
+			else{  //seq not yet seen and no room in cache
+				Tree.insert(cache.removeFirst());  //make room by pulling out of cache and inserting into BTree
+				cache.addObject(tempSeq);  //now is in cache
+			}
+		}
+		
+		//now dump all sequences in cache into btree
+		while(!cache.isEmpty()){
+			Tree.insert(cache.removeFirst());
+		}
+        
+		//dump tree to binary file
 	}
 	
 }
