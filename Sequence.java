@@ -12,7 +12,7 @@ public class Sequence implements Comparable<Sequence>, Serializable {
 
     @Override
     public int compareTo(Sequence sequence) {
-        return (int)(this.sequence - sequence.sequence);
+        return (int) (this.sequence - sequence.sequence);
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
@@ -23,9 +23,9 @@ public class Sequence implements Comparable<Sequence>, Serializable {
         sequence = in.readLong();
     }
 
-	private void readObjectNoData() throws ObjectStreamException {
-		sequence = 0;
-	}
+    private void readObjectNoData() throws ObjectStreamException {
+        sequence = 0;
+    }
 
     @Override
     public String toString() {
