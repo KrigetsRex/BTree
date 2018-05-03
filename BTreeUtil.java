@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
@@ -198,7 +197,14 @@ public class BTreeUtil {
         }
         return parts;
     }
-
+    
+    /**
+     * Creates a new string name based on project specifications
+     * @param gbkFile
+     * @param k
+     * @param t
+     * @return 
+     */
     public static String createBTreeFileName(String gbkFile, Integer k, Integer t){ 
         return gbkFile + ".btree.data." + k + "." + t; 
     }
