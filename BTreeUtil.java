@@ -167,7 +167,7 @@ public class BTreeUtil {
         
         //Padd the string with any missing 
         int length = seqLen * 2;
-        while(boolString.length() != length){
+        while(boolString.length() > length){
             boolString = "0" + boolString;
         }
        
