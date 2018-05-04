@@ -5,30 +5,38 @@ import java.io.*;
  */
 public class Sequence implements Comparable<Sequence>, Serializable {
     public long sequence;
+    public int length;
+
+    public Sequence(long sequence, int length) {
+        this.sequence = sequence;
+        this.length = length;
+    }
 
     public Sequence(long sequence) {
-        this.sequence = sequence;
+        this(sequence, 31);
     }
 
     @Override
     public int compareTo(Sequence sequence) {
-        return (int) (this.sequence - sequence.sequence);
+//        if(this.length == sequence.length) {
+//            return Long.compare(this.sequence, sequence.sequence);
+//        } else {
+//            return Integer.compare(this.length, sequence.length);
+//        }
+        return Long.compare(this.sequence, sequence.sequence);
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeLong(sequence);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException {
-        sequence = in.readLong();
-    }
-
-    private void readObjectNoData() throws ObjectStreamException {
-        sequence = 0;
-    }
+//    private void writeObject(ObjectOutputStream out) throws IOException {
+//        out.writeLong(sequence);
+//    }
+//
+//    private void readObject(ObjectInputStream in) throws IOException {
+//        sequence = in.readLong();
+//    }
 
     @Override
     public String toString() {
-        return Long.toString(sequence);
+//        return Long.toString(sequence);
+        return BTreeUtil.convertLongToString(sequence, length);
     }
 }

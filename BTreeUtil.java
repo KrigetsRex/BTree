@@ -11,13 +11,7 @@ import java.util.Scanner;
  * @author jacobphillip
  */
 public class BTreeUtil {
-    
-    //constructor
-    public BTreeUtil(){
 
-    }
-
-    
     /**
      * 
      * @param inputPath - path to the geneBank File
@@ -151,9 +145,9 @@ public class BTreeUtil {
      * @return - original DNA string value
      */
     public static String convertLongToString(Long key, Integer seqLen){
-        
+
         String boolString =  Long.toBinaryString(key);
-        
+
         Boolean sameLength = false;
         while(!sameLength){
             int length = boolString.length()/2;
@@ -191,9 +185,6 @@ public class BTreeUtil {
         
         return returnString;
     }
-    
-    
-    
     
     /**
      * Splits a string into a designated number of pieces

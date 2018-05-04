@@ -7,14 +7,14 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class BTree<T extends Comparable<? super T> & Serializable> implements Serializable {
-
-    public transient Node root;
-    private final int t;                            //minimum degree
+    private transient Node root;
+    private int t;                            //minimum degree
     private final int maxKeys;
 
     public BTree(int t) {
@@ -58,6 +58,14 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
             }
         }
     }
+
+//    private void writeObject(ObjectOutputStream out) throws IOException {
+//        out.writeInt(t);
+//    }
+//
+//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+//        t = in.readInt();
+//    }
 
     public void write(OutputStream out) throws IOException {
         BTree.write(out, this);
@@ -133,7 +141,6 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
     }
 
     public static class Key<E extends Comparable<? super E>> implements Comparable<Key<E>>, Serializable {
-
         public E key;
         public long count;
 
@@ -147,15 +154,20 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
             return key.compareTo(eKey.key);
         }
 
-        private void writeObject(ObjectOutputStream out) throws IOException {
-            out.writeLong(count);
-            out.writeObject(key);
+        @Override
+        public String toString() {
+            return key.toString() + " " + count;
         }
 
-        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-            count = in.readLong();
-            key = (E) in.readObject();
-        }
+//        private void writeObject(ObjectOutputStream out) throws IOException {
+//            out.writeLong(count);
+//            out.writeObject(key);
+//        }
+//
+//        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+//            count = in.readLong();
+//            key = (E) in.readObject();
+//        }
     }
 
     /**
@@ -163,7 +175,6 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
      */
     //class is currently public - making it private made some testing difficult. Not sure if there's a workaround
     public class Node implements Serializable {
-
         //TODO add readObject and writeObject methods to more carefully serialize node data.
         public ArrayList<Key<T>> keys;
         public transient ArrayList<Node> children;
@@ -174,8 +185,8 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
          */
         public Node(boolean isLeaf) {
             this.isLeaf = isLeaf;
-            keys = new ArrayList<Key<T>>();
-            children = new ArrayList<Node>();
+            keys = new ArrayList<>();
+            children = new ArrayList<>();
         }
 
         /**
@@ -189,8 +200,7 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
         }
 
         /**
-         * Method to insert a given key into this node. Should only be called if
-         * a node is not full
+         * Method to insert a given key into this node. Should only be called if a node is not full
          */
         public void insertNonFull(T k) {
             //get the right-most key index
@@ -201,7 +211,7 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
                     i--;
                 }
 
-                if (keys.get(i).key.compareTo(k) == 0) {
+                if (i >= 0 && keys.get(i).key.compareTo(k) == 0) {
                     keys.get(i).count++;
                 } else {
                     //insert key at location
@@ -209,12 +219,14 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
                 }
             } else {
                 //if not leaf, find child that will get new key
-                while (i >= 0 && keys.get(i).key.compareTo(k) > 0) {
+                while (i >= 0 && keys.get(i).key.compareTo(k) < 0) {
                     i--;
+
                 }
 
-                if (keys.get(i).key.compareTo(k) == 0) {
-                    keys.get(i).count++;
+
+                if (i >= 0 && keys.get(i).key.compareTo(k) == 0) {
+                    keys.get(i-1).count++;
                 } else {
                     //check if that child is full
                     if (children.get(i + 1).keys.size() == maxKeys) {
@@ -281,19 +293,6 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
             return children.get(i).search(k);
         }
 
-        public void traverse() {
-            int i;
-            System.out.println("tr start");
-            for (i = 0; i < keys.size(); i++) {
-                if (!isLeaf) {
-                    children.get(i).traverse();
-                }
-            }
-            if (!isLeaf) {
-                children.get(i).traverse();
-            }
-        }
-
         public ArrayList<T> getKeys() {
             ArrayList<T> keys = new ArrayList<T>();
             for (Key<T> key : this.keys) {
@@ -305,40 +304,53 @@ public class BTree<T extends Comparable<? super T> & Serializable> implements Se
             return keys;
         }
     }
-    
-    
-    
-    //  D U M P   T R E E    T O    F I L E 
-    /**
-     * Uses the inOrderTraversal method to walk through a tree and output the
-     * frequency and string value to a new txt file.
-     *
-     * @param node - The root of the tree
-     */
-    public void dumpTree(Node node) {
-        try {
-            PrintWriter writer = new PrintWriter("dump.txt", "UTF-8");
-            inOrderTraversal(node, writer);
-            writer.close();
-        } catch (Exception e) {
-            System.out.println("There was an issue:" + e);
-        }
+
+    public void forEach(Consumer<? super T> consumer) {
+        forEach(root, consumer);
     }
-    
-    /**
-     * Recursively traverses the BTree from the root printing out the contents
-     * of the nodes through an in-order traversal
-     *
-     * @param node - pass in a node within the tree (root)
-     * @param writer
-     */
-    public void inOrderTraversal(Node node, PrintWriter writer) {
-        for (int i = 0; i < node.keys.size(); i++) {
-            if (null != node.children) {
-                inOrderTraversal(node.children.get(i), writer);
+
+    private void forEach(Node parent, Consumer<? super T> consumer) {
+        for(int i = 0; i < parent.keys.size(); i++) {
+            if(!parent.isLeaf) {
+                forEach(parent.children.get(i), consumer);
+                consumer.accept(parent.keys.get(i).key);
             }
-            writer.println(node.keys.get(i).count + " " + BTreeUtil.converLongToString(node.keys.get(i).count));
+        }
+        if(parent.children != null && parent.children.size() > 0) {
+            forEach(parent.children.get(parent.keys.size()), consumer);
         }
     }
+
+
+//    //  D U M P   T R E E    T O    F I L E
+//    /**
+//     * Uses the inOrderTraversal method to walk through a tree and output the
+//     * frequency and string value to a new txt file.
+//     */
+//    public void dumpTree() {
+//        try {
+//            PrintWriter writer = new PrintWriter("dump.txt", "UTF-8");
+//            inOrderTraversal(root, writer);
+//            writer.close();
+//        } catch (Exception e) {
+//            System.out.println("There was an issue:" + e);
+//        }
+//    }
+
+//    /**
+//     * Recursively traverses the BTree from the root printing out the contents
+//     * of the nodes through an in-order traversal
+//     *
+//     * @param node - pass in a node within the tree (root)
+//     * @param writer
+//     */
+//    public void inOrderTraversal(Node node, PrintWriter writer) {
+//        for (int i = 0; i < node.keys.size(); i++) {
+//            if (null != node.children) {
+//                inOrderTraversal(node.children.get(i), writer);
+//            }
+//            writer.println(node.keys.get(i).count + " " + BTreeUtil.convertLongToString(node.keys.get(i).count, node.keys.get(i).key), );
+//        }
+//    }
 
 }
