@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -11,7 +12,13 @@ import java.util.Scanner;
  * @author jacobphillip
  */
 public class BTreeUtil {
+    
+    //constructor
+    public BTreeUtil(){
 
+    }
+
+    
     /**
      * 
      * @param inputPath - path to the geneBank File
@@ -59,13 +66,23 @@ public class BTreeUtil {
      */
     public static List<String> getSubsequences(int subLength, String dnaString){
         
+        String[] strArr = dnaString.split("[nN]");
+        ArrayList<String> finalArr = new ArrayList<>();
+        
+        for(int z = 0; z < strArr.length; z++){
+            if(strArr[z].length() > subLength){
+                finalArr.add(strArr[z]);
+            }
+        }
+        
         List<String> subSequences = new ArrayList<>();
         
-        int length = dnaString.length();
-        
-        for(int i = 0; i < length; i++){
-            if(i + subLength <= length){
-                subSequences.add(dnaString.substring(i, i + subLength));
+        for(int j = 0; j < finalArr.size(); j++){
+            int length = finalArr.get(j).length();
+            for(int i = 0; i < length; i++){
+                if(i + subLength <= length){
+                    subSequences.add(dnaString.substring(i, i + subLength));
+                }
             }
         }
         
@@ -145,18 +162,13 @@ public class BTreeUtil {
      * @return - original DNA string value
      */
     public static String convertLongToString(Long key, Integer seqLen){
-
+        
         String boolString =  Long.toBinaryString(key);
-
-        Boolean sameLength = false;
-        while(!sameLength){
-            int length = boolString.length()/2;
-            if(length >= seqLen){
-                sameLength = true;
-            }
-            else{
-                boolString = "00" + boolString;
-            }
+        
+        //Padd the string with any missing 
+        int length = seqLen * 2;
+        while(boolString.length() != length){
+            boolString = "0" + boolString;
         }
        
         List<String> strArr = getParts(boolString, 2);
@@ -186,6 +198,7 @@ public class BTreeUtil {
         return returnString;
     }
     
+
     /**
      * Splits a string into a designated number of pieces
      * @param string 
